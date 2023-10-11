@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>🍬Candy Crush🍬</title>
+    <style type="text/css">
+        @font-face {
+            font-family: 'CWDangamAsac-Bold';
+            src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/CWDangamAsac-Bold.woff') format('woff');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        body { background: #ff0090; margin: 0;}
+        .link:hover { cursor : url(cursor.png) 20 30, auto;}
+        .candy { position: absolute; left: 0; top: 0; }
+        #poetText { z-index: 9; position: absolute; left: 30px; top: 30px; font-size: 6rem; font-family: 'CWDangamAsac-Bold', serif; font-weight: 700; color: #ffffff; line-height: 5.5rem; text-align: left; }
+        .word { opacity: 0; animation: zoomIn 0.8s forwards; }
+
+        #timer { position: absolute; right: 30px; top: 30px; font-size: 1.4rem; color: #ffffff; }
+        #score { position: absolute; right: 30px; top: 60px; font-size: 1.4rem; color: #ffffff; }
+
+        @keyframes zoomIn {
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div id="poetText"></div>
+    <div id="timer"></div>
+    <div id="score">점수: 0</div>
+    <audio id="audio" src="crash.wav"></audio>
+
+    <script type="text/javascript">
+        var a = ["candy1", "candy2", "candy3", "candy4", "candy5"];
+        var images = [];
+        var score = 0;
+
+        function handleImageClick(event) {
+            // 타이머가 종료되었을 때만 클릭 이벤트 처리
+            if (secondsLeft > 0) {
+                event.target.style.display = "none";
+                if (images.every(img => img.style.display === "none")) {
+                    images.forEach(img => img.style.display = "block");
+                }
+
+                // 클릭할 때마다 점수 증가
+                score++;
+                document.getElementById("score").textContent = "점수: " + score;
+            }
+        }
+
+        for (var i = 0; i < 30; i++) {
+            var t = document.createElement("img");
+            t.src = a[randomBH(0, 4)] + ".png";
+            t.className = "candy";
+            t.style.width = randomBH(60, 400) + "px";
+            t.style.height = "auto";
+            t.style.left = Math.random() * screen.availWidth + "px";
+            t.style.top = Math.random() * screen.availHeight + "px";
+
+            t.addEventListener("click", handleImageClick);
+
+            document.body.appendChild(t);
+            images.push(t);
+        }
+
+        function randomBH(min, max) {
+            min = Math.ceil(min);
+            max = Math.floor(max);
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        document.body.onclick = function play() {
+            var audio = document.getElementById("audio");
+            audio.play();
+        }
+
+        var poet = "Click Candies to Crush!";
+        var poetArr = poet.split(" ");
+
+        var myTimer = setInterval(print, 400);
+        var s = 0;
+
+        function print() {
+            var t = document.createElement("span");
+            t.innerHTML = poetArr[s] + " ";
+            t.className = "word";
+            s++;
+            poetText.appendChild(t);
+            if (s == poetArr.length) {
+                clearInterval(myTimer);
+            }
+        }
+
+        // 타이머 추가
+        var timerElement = document.getElementById("timer");
+        var secondsLeft = 10;
+        var timerInterval = setInterval(function() {
+            timerElement.textContent = "남은 시간: " + secondsLeft + " 초";
+            secondsLeft--;
+            if (secondsLeft < 0) {
+                clearInterval(timerInterval);
+                timerElement.textContent = "시간 종료!";
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
